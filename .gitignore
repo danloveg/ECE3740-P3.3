@@ -1,0 +1,7 @@
+/Client/build/
+/Client/dist/
+/Client/nbproject/private/
+/Client/nbproject/build/
+/Client/nbproject/dist/
+
+/Client/*.class
