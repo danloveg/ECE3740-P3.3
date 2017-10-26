@@ -1,7 +1,18 @@
+# Ignore build, debug, and dist
+build/
+debug/
+dist/
+
+# Ignore the private folder in nbproject
+/MX7CKServer/ServerApplication/XC32-PIC32_ETH_SK_ETH795.X/nbproject/private/
+
+# Ignore unnecessary Client files
 /Client/build/
 /Client/dist/
 /Client/nbproject/private/
 /Client/nbproject/build/
 /Client/nbproject/dist/
 
-/Client/*.class
+# Ignore class files
+*.class
+
