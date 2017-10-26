@@ -52,6 +52,7 @@
  * Amit Shirbhate 		09/24/08  SNMPv2c Support added.
  * Hrisikesh Sahu 		04/15/10  SNMPv2 trap format support.
  ********************************************************************/
+#define _SUPPRESS_PLIB_WARNING
 #define __CUSTOMSNMPAPP_C
 
 #include "TCPIPConfig.h"

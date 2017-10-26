@@ -1,3 +1,5 @@
+#define _SUPPRESS_PLIB_WARNING
+
 #include "TCPIPConfig.h"
 
 #if defined(STACK_USE_TCP_GPIO_SERVER)

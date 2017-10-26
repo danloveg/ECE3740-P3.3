@@ -51,6 +51,7 @@
  *~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
  * Elliott Wood     	6/18/07	Original
  ********************************************************************/
+#define _SUPPRESS_PLIB_WARNING
 #define __CUSTOMHTTPAPP_C
 
 #include "TCPIPConfig.h"

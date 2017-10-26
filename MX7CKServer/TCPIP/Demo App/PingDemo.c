@@ -48,6 +48,7 @@
  *~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
  * E. Wood     			4/26/08	  Moved from MainDemo.c
  ********************************************************************/
+#define _SUPPRESS_PLIB_WARNING
 #define __PINGDEMO_C
 
 #include "TCPIPConfig.h"

@@ -1,4 +1,5 @@
 #define __LEDTCPSERVER_C
+#define _SUPPRESS_PLIB_WARNING
 
 #include "TCPIPConfig.h"
 

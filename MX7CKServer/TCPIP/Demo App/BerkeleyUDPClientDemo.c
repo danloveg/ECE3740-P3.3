@@ -54,6 +54,7 @@
  * Darren Wenn			03/08/07	Original
  * Howard Schlunder		06/20/07	Modified for release
  ********************************************************************/
+#define _SUPPRESS_PLIB_WARNING
 #define __SNTP_C
 
 #include "TCPIPConfig.h"

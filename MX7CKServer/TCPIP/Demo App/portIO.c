@@ -1,3 +1,5 @@
+#define _SUPPRESS_PLIB_WARNING
+
 #include "PortConfig.h"
 
 int ledPort;

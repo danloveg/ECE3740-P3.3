@@ -52,6 +52,9 @@
  * 1.0   Initial release
  * V5.36 ---- STACK_USE_MPFS support has been removed 
  ********************************************************************/
+
+#define _SUPPRESS_PLIB_WARNING
+
 /*
  * This macro uniquely defines this file as the main entry point.
  * There should only be one such definition in the entire project,

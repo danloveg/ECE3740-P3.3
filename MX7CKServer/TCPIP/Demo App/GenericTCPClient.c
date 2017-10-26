@@ -52,6 +52,7 @@
  *~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
  * Howard Schlunder     8/01/06	Original
  ********************************************************************/
+#define _SUPPRESS_PLIB_WARNING
 #define __GENERICTCPCLIENT_C
 
 #include "TCPIPConfig.h"

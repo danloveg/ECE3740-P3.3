@@ -86,6 +86,7 @@
  *   5) Press Escape to end the demo.
  *
  ********************************************************************/
+#define _SUPPRESS_PLIB_WARNING
 #define __GENERICTCPSERVER_C
 
 #include "TCPIPConfig.h"

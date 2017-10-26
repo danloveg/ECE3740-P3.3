@@ -53,6 +53,7 @@
  * Elliott Wood	        6/20/07		Original
  * Elliott Wood			10/09/07	Replaced certificate
  ********************************************************************/
+#define _SUPPRESS_PLIB_WARNING
 #define __CUSTOMSSLCERT_C
 
 #include "TCPIPConfig.h"

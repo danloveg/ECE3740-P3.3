@@ -48,6 +48,7 @@
  *
  * V5.36 ---- STACK_USE_MPFS has been removed and DownloadMPFS has upgraded to MPFS2
  ********************************************************************/
+#define _SUPPRESS_PLIB_WARNING
 #define __UARTCONFIG_C
 
 #include "TCPIPConfig.h"
