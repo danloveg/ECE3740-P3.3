@@ -4,7 +4,7 @@ debug/
 dist/
 
 # Ignore the private folder in nbproject
-/TCPIP/Demo App/XC32-PIC32_ETH_SK_ETH795.X/nbproject/private/
+MX7CKServer/TCPIP/Demo App/XC32-PIC32_ETH_SK_ETH795.X/nbproject/private/
 
 # Ignore unnecessary Client files
 /Client/build/
