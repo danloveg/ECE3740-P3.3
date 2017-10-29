@@ -72,8 +72,8 @@ public class ClientMessageHandler {
         if (false == myClient.isConnected()) {
             // If we are not connected, try to connect
             try {
-                // Connect
-                myClient.connectToServer(InetAddress.getLocalHost());
+                // Connect to MX7CK board
+                myClient.connectToServerIP("192.168.1.214");
                 // Create Client Thread and start it
                 Thread clientThread = new Thread(myClient);
                 clientThread.start();

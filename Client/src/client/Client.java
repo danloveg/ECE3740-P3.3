@@ -27,17 +27,32 @@ public class Client implements Runnable {
      * @param ui The user interface
      */
     public Client(int portNumber, userinterface.Userinterface ui) {
-        this.portNumber = 5555;
+        this.portNumber = portNumber;
         this.UI = ui;
     }
 
 
     /**
-     * Connect to a server on the specified port number using the local host.
-     * @param address The host's address
+     * Connect to the server using the local host.
      * @throws IOException
      */
-    public void connectToServer(InetAddress address) throws IOException {
+    public void connectToServerLocally() throws IOException {
+        connectToServer(InetAddress.getLocalHost());
+    }
+
+
+    /**
+     * Connect to a server using the IP address.
+     * @param IP The IP address to connect to in String format
+     * @throws IOException
+     */
+    public void connectToServerIP(String IP) throws IOException {
+        connectToServer(InetAddress.getByName(IP));
+    }
+
+
+    // Connect to the server at the address and port number
+    private void connectToServer(InetAddress address) throws IOException {
         if (null == this.clientSocket) {
             // Create a socket
             clientSocket = new Socket(address, portNumber);

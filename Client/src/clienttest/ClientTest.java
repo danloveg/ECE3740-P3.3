@@ -12,7 +12,7 @@ public class ClientTest {
                 new userinterfacegui.ClientUserInterface();
         
         // Instantiate a new Client
-        client.Client myClient = new client.Client(5555, userInterface);
+        client.Client myClient = new client.Client(7777, userInterface);
         
         // Instantiate a command handler for the user
         clientmessagehandler.ClientMessageHandler commandHandler =
