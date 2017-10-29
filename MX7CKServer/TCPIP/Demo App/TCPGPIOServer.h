@@ -12,6 +12,8 @@
 #define TCP_GPIO_SERVER_PORT    7777
 #define MAX_CMD_LENGTH 5
 
+#define TERMINATING_BYTE 0xFFFD
+
 typedef enum _myState {
     SM_OPEN_SERVER_SOCKET = 0,
     SM_LISTEN_FOR_CLIENT_CONNECTION,
@@ -47,6 +49,7 @@ typedef enum _parsedCommand {
 //typedef enum _parsedCommand parsedCommand;
 
 parsedCommand findCommand (BYTE* u);
+void tcpSendMessageWithProtocol(TCP_SOCKET s, char* msg);
 
 #endif	/* TCPGPIOSERVER_H */
 

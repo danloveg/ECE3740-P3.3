@@ -47,7 +47,7 @@ const char *menu[] = {"\n\n    Enter a command to interact with board, or enter 
 void TCPGPIOServer(void) {
     static TCP_SOCKET mySocket;
     WORD numBytes = 0;
-    BYTE userCmd[MAX_CMD_LENGTH + 1];
+    BYTE userCmd[80];
     int size;
 
     switch (myState) {
@@ -67,6 +67,9 @@ void TCPGPIOServer(void) {
             break;
         // Display the menu
         case SM_DISPLAY_MENU:
+            /*
+             * We don't need the menu for the current application
+             *
             // Disconnect if the client is disconnects
             if (TCPIsConnected(mySocket) == FALSE) {
                 myState = SM_DISCONNECT_CLIENT;
@@ -79,14 +82,14 @@ void TCPGPIOServer(void) {
                 return;
             }
             
-            TCPPutArray(mySocket, (BYTE*)menu[menuState++], size);
-            
-            TCPFlush(mySocket);
+            tcpSendMessageWithProtocol(mySocket, (char*)menu[menuState++]);
             
             if (menuState == 4) {
                 myState = SM_FIND_COMMAND;
-            }
-            
+            }*/
+
+            myState = SM_FIND_COMMAND;
+
             break;
         // Find the user's command
         case SM_FIND_COMMAND:
@@ -96,6 +99,9 @@ void TCPGPIOServer(void) {
                 return;
             }
             
+            /*
+             * We don't need the prompt for this application
+             *
             if (promptDisplayed == FALSE) {
                 size = strlen("\x1B[33m $ \x1B[37m");
 
@@ -107,7 +113,7 @@ void TCPGPIOServer(void) {
                 // Display a prompt
                 TCPPutArray(mySocket, (BYTE*)"\x1B[33m $ \x1B[37m", size);
                 promptDisplayed = TRUE;
-            }
+            }*/
             
             // Get the number of bytes in the 'GET' queue
             numBytes = TCPIsGetReady(mySocket);
@@ -115,25 +121,22 @@ void TCPGPIOServer(void) {
             // If there are zero bytes in the queue, don't do anything
             if (numBytes == 0) {
                 myCommand = DO_NO_COMMAND;
-            } else if (numBytes > MAX_CMD_LENGTH + 2) {
-                userCmd[0] = (BYTE) '\0';
-                myCommand = DO_FIND;
-                TCPDiscard(mySocket);
             }
             // Otherwise, get the user's command they sent, q is quit
             else {
                 // All commands have a max length
                 TCPGetArray(mySocket, (BYTE*)&userCmd, numBytes - 2);
-                // So if there's anything else in there, discard it
-                TCPDiscard(mySocket);
                 // Null terminate command string
                 userCmd[numBytes - 2] = '\0';
                 
-                if (numBytes == 3 && (userCmd[0] == 'q' || userCmd[0] == 'Q')) {
-                    myCommand = DO_QUIT;
-                }
-                else {
-                    myCommand = DO_FIND;
+                // User commands must be terminated with 0xFF
+                if (userCmd[numBytes - 3] == '0xFF') {
+                    if (numBytes == 4 && (userCmd[0] == 'q')) {
+                        myCommand = DO_QUIT;
+                    }
+                    else {
+                        myCommand = DO_FIND;
+                    }
                 }
             }
             
@@ -253,6 +256,14 @@ parsedCommand findCommand(BYTE* unparsedCommand) {
     else { cmd = INVALID; }
     
     return cmd;
+}
+
+// CREATE A METHOD FOR READING FROM THE CLIENT WITH PROTOCOL
+
+void tcpSendMessageWithProtocol(TCP_SOCKET socket, char* message) {
+    TCPPutArray(socket, message, strlen(message));
+    TCPFlush(socket);
+    TCPPut(socket, TERMINATING_BYTE);
 }
 
 #endif //#if defined(STACK_USE_TCP_TO_UPPER_SERVER)
