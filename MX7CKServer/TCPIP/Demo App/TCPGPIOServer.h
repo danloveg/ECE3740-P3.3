@@ -10,9 +10,9 @@
 
 // Defines which port the server will listen on
 #define TCP_GPIO_SERVER_PORT    7777
-#define MAX_CMD_LENGTH 5
-
 #define TERMINATING_BYTE 0xFFFD
+#define MAX_RESPONSE_LENGTH 20
+#define MAX_CMD_LENGTH 18
 
 typedef enum _myState {
     SM_OPEN_SERVER_SOCKET = 0,
@@ -49,6 +49,7 @@ typedef enum _parsedCommand {
 //typedef enum _parsedCommand parsedCommand;
 
 parsedCommand findCommand (BYTE* u);
+BOOL executeCommand(TCP_SOCKET socket, parsedCommand cmd);
 void tcpSendMessageWithProtocol(TCP_SOCKET s, char* msg);
 void tcpSendDisconnectAcknowledge(TCP_SOCKET s);
 void tcpReadCommandWithProtocol(TCP_SOCKET s, BYTE* command, unsigned int numBytes);
