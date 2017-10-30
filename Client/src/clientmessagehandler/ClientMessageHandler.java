@@ -127,6 +127,7 @@ public class ClientMessageHandler {
                 myClient.sendMessageToServer(message);
             } catch (IOException e) {
                 UI.update("Could not send message to server.");
+                disconnectClientFromServer("d");
             }
         } else {
             UI.update("No connected server.");

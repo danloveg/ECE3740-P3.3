@@ -63,14 +63,8 @@ public class ServerMessageHandler {
      */
     public void sendStringToServer(String message) throws IOException {
         if (output != null) {
-            output.print(message + TERMINATOR);
-            /*
-            for (int i = 0; i < message.length(); i++) {
-                output.write(message.charAt(i));
-            }
-            // Finally, terminate it.
-            output.write(TERMINATOR);
-            */
+            output.print(message);
+            output.print(TERMINATOR);
             output.flush();
         }
     }
