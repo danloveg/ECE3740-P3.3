@@ -273,8 +273,12 @@ void tcpReadCommandWithProtocol(TCP_SOCKET socket, BYTE* command, unsigned int n
     TCPGetArray(socket, command, numBytes);
     TCPDiscard(socket);
 
-    // Replace terminating byte with null terminator
-    command[numBytes - 1] = '\0';
+    // Replace terminating byte with null terminator. For some reason that I do
+    // not know, the terminating byte 0xFF sent by the client is transformed to
+    // 0xEF somewhere.
+    if (command[numBytes - 1] == 0xEF) {
+        command[numBytes - 1] = '\0';
+    }
 }
 
 #endif //#if defined(STACK_USE_TCP_TO_UPPER_SERVER)

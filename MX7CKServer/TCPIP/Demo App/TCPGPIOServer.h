@@ -10,7 +10,7 @@
 
 // Defines which port the server will listen on
 #define TCP_GPIO_SERVER_PORT    7777
-#define TERMINATING_BYTE 0xFFFD
+#define TERMINATING_BYTE 0xFF
 #define MAX_RESPONSE_LENGTH 20
 #define MAX_CMD_LENGTH 18
 
