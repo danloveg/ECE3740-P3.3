@@ -1,3 +1,15 @@
+/*
+ * File:   TCPGPIOServer.c
+ * Author: Daniel Lovegrove
+ *
+ * Summary:
+ *      Implements a TCP/IP server that will turn the onboard LEDs on/off of the
+ *      MX7CK board, or give the state of the push buttons depending on what the
+ *      user requests.
+ *
+ * Version: October 29, 2017
+ */
+
 #define _SUPPRESS_PLIB_WARNING
 
 #include "TCPIPConfig.h"
@@ -13,19 +25,8 @@
 
 // State variables
 state myState = SM_OPEN_SERVER_SOCKET;
-command myCommand = DO_NO_COMMAND;
 parsedCommand parsedCmd = INVALID;
 
-/*
- * Unnecessary for this application
- *
-int menuState = 0;
-
-const char *menu[] = {"\n\n    Enter a command to interact with board, or enter q to quit\n\n",
-                      "LED1 on: LED1      LED1 off: ~LED1      LED2 on: LED2      LED2 off: ~LED2\n",
-                      "LED3 on: LED3      LED3 off: ~LED3      LED4 on: LED4      LED4 off: ~LED4\n",
-                      "Get BTN1 state: BTN1       Get BTN2 state: BTN2       Get BTN3 state: BTN3\n"};
-*/
 
 /*****************************************************************************
   Function:
@@ -135,6 +136,12 @@ void TCPGPIOServer(void) {
     }
 }
 
+
+/**
+ * Find the correct command from the user's string.
+ * @param unparsedCommand - The raw string from the user
+ * @return The parsed command of type parsedCommand
+ */
 parsedCommand findCommand(BYTE* unparsedCommand) {
     char *usersCommand = (char*) unparsedCommand;
     parsedCommand cmd;
@@ -155,6 +162,13 @@ parsedCommand findCommand(BYTE* unparsedCommand) {
     return cmd;
 }
 
+
+/**
+ * Execute a parsed command.
+ * @param socket - The socket the client is connected to
+ * @param cmd - The command that the client sent
+ * @return TRUE if command was executed, FALSE if not.
+ */
 BOOL executeCommand(TCP_SOCKET socket, parsedCommand cmd) {
     BOOL executed = FALSE;
 
@@ -225,16 +239,36 @@ BOOL executeCommand(TCP_SOCKET socket, parsedCommand cmd) {
     return executed;
 }
 
+
+/**
+ * Send a message to the client using the communications protocol. The protocol
+ * is to send a single terminating byte.
+ * @param socket - The socket over which to send the message
+ * @param message - The message to send to the client
+ */
 void tcpSendMessageWithProtocol(TCP_SOCKET socket, char* message) {
     TCPPutArray(socket, (BYTE*) message, strlen(message));
     TCPFlush(socket);
     TCPPut(socket, (BYTE) TERMINATING_BYTE);
 }
 
+
+/**
+ * Send a disconnect acknowledgement message to the client.
+ * @param socket - The socket that the client is disconnecting from
+ */
 void tcpSendDisconnectAcknowledge(TCP_SOCKET socket) {
     tcpSendMessageWithProtocol(socket, "Disconnect acknowledged.");
 }
 
+
+/**
+ * Read an array of bytes from the socket, and terminate it to make it a string.
+ * @param socket - The socket to be read from
+ * @param command - The command variable where the bytes will be placed
+ * @param numBytes - The number of bytes to read. The rest of the bytes in the
+ *     FIFO will be discarded.
+ */
 void tcpReadCommandWithProtocol(TCP_SOCKET socket, BYTE* command, unsigned int numBytes) {
     TCPGetArray(socket, command, numBytes);
     TCPDiscard(socket);

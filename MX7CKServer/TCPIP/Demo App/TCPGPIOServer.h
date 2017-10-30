@@ -1,8 +1,8 @@
 /* 
  * File:   TCPGPIOServer.h
- * Author: loveboat
+ * Author: Daniel Lovegrove
  *
- * Created on October 1, 2017, 5:33 PM
+ * Version: October 29, 2017
  */
 
 #ifndef TCPGPIOSERVER_H
@@ -23,12 +23,6 @@ typedef enum _myState {
     SM_DISCONNECT_CLIENT
 } state;
 
-typedef enum _commandEnums {
-    DO_NO_COMMAND = 0,
-    DO_QUIT,
-    DO_FIND,
-} command;
-
 typedef enum _parsedCommand {
     INVALID = 0,
     LED1,
@@ -43,10 +37,6 @@ typedef enum _parsedCommand {
     BTN2,
     BTN3
 } parsedCommand;
-
-// typedef enum _myState state;
-//typedef enum _commandEnums command;
-//typedef enum _parsedCommand parsedCommand;
 
 parsedCommand findCommand (BYTE* u);
 BOOL executeCommand(TCP_SOCKET socket, parsedCommand cmd);
