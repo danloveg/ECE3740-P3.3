@@ -72,7 +72,6 @@ public class ClientUserInterface extends javax.swing.JFrame
 
         connectToServerButton = new javax.swing.JButton();
         disconnectFromServerButton = new javax.swing.JButton();
-        getTimeButton = new javax.swing.JButton();
         led1CheckBox = new javax.swing.JCheckBox();
         led2CheckBox = new javax.swing.JCheckBox();
         led3CheckBox = new javax.swing.JCheckBox();
@@ -103,13 +102,6 @@ public class ClientUserInterface extends javax.swing.JFrame
         disconnectFromServerButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 disconnectFromServerButtonActionPerformed(evt);
-            }
-        });
-
-        getTimeButton.setText("Get Time");
-        getTimeButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                getTimeButtonActionPerformed(evt);
             }
         });
 
@@ -191,16 +183,18 @@ public class ClientUserInterface extends javax.swing.JFrame
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
+                        .addComponent(connectToServerButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addGap(22, 22, 22)
+                        .addComponent(disconnectFromServerButton)
+                        .addGap(0, 0, Short.MAX_VALUE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(led1CheckBox, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addGap(79, 79, 79))
+                    .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(led2CheckBox)
                             .addComponent(led3CheckBox)
                             .addComponent(led4CheckBox)
-                            .addGroup(layout.createSequentialGroup()
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                                    .addComponent(led1CheckBox, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                    .addComponent(connectToServerButton, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(disconnectFromServerButton))
                             .addGroup(layout.createSequentialGroup()
                                 .addComponent(btn1StateButton)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -213,21 +207,19 @@ public class ClientUserInterface extends javax.swing.JFrame
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addComponent(btn2Label)
                                     .addComponent(btn3Label)))
-                            .addComponent(getTimeButton, javax.swing.GroupLayout.PREFERRED_SIZE, 97, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 17, Short.MAX_VALUE)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                                .addComponent(outputLabel)
-                                .addGap(230, 230, 230))
-                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                                .addComponent(scrollPane, javax.swing.GroupLayout.PREFERRED_SIZE, 502, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addContainerGap())))
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(quitButton)
-                        .addGap(0, 0, Short.MAX_VALUE))))
+                            .addComponent(quitButton))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addComponent(outputLabel)
+                        .addGap(230, 230, 230))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addComponent(scrollPane, javax.swing.GroupLayout.PREFERRED_SIZE, 502, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addContainerGap())))
         );
 
-        layout.linkSize(javax.swing.SwingConstants.HORIZONTAL, new java.awt.Component[] {connectToServerButton, getTimeButton, quitButton});
+        layout.linkSize(javax.swing.SwingConstants.HORIZONTAL, new java.awt.Component[] {connectToServerButton, quitButton});
 
         layout.linkSize(javax.swing.SwingConstants.HORIZONTAL, new java.awt.Component[] {btn1StateButton, btn3StateButton});
 
@@ -240,10 +232,9 @@ public class ClientUserInterface extends javax.swing.JFrame
                     .addComponent(disconnectFromServerButton)
                     .addComponent(outputLabel))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(scrollPane, javax.swing.GroupLayout.PREFERRED_SIZE, 270, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(getTimeButton)
-                        .addGap(18, 18, 18)
                         .addComponent(led1CheckBox)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(led2CheckBox)
@@ -262,11 +253,10 @@ public class ClientUserInterface extends javax.swing.JFrame
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(btn3StateButton)
-                            .addComponent(btn3Label)))
-                    .addComponent(scrollPane))
-                .addGap(18, 18, 18)
-                .addComponent(quitButton)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                            .addComponent(btn3Label))
+                        .addGap(18, 18, 18)
+                        .addComponent(quitButton)))
+                .addContainerGap(20, Short.MAX_VALUE))
         );
 
         pack();
@@ -279,10 +269,6 @@ public class ClientUserInterface extends javax.swing.JFrame
     private void disconnectFromServerButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_disconnectFromServerButtonActionPerformed
         commandHandler.execute("d");
     }//GEN-LAST:event_disconnectFromServerButtonActionPerformed
-
-    private void getTimeButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_getTimeButtonActionPerformed
-        commandHandler.execute("t");
-    }//GEN-LAST:event_getTimeButtonActionPerformed
 
     private void quitButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_quitButtonActionPerformed
         commandHandler.execute("q");
@@ -341,7 +327,6 @@ public class ClientUserInterface extends javax.swing.JFrame
     private javax.swing.JButton btn3StateButton;
     private javax.swing.JButton connectToServerButton;
     private javax.swing.JButton disconnectFromServerButton;
-    private javax.swing.JButton getTimeButton;
     private javax.swing.JCheckBox led1CheckBox;
     private javax.swing.JCheckBox led2CheckBox;
     private javax.swing.JCheckBox led3CheckBox;

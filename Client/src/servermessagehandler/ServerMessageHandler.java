@@ -2,7 +2,7 @@ package servermessagehandler;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
+import java.io.PrintWriter;
 import java.io.IOException;
 import java.net.Socket;
 
@@ -14,7 +14,7 @@ import java.net.Socket;
 public class ServerMessageHandler {
     private static final char TERMINATOR = 0xFFFD; // UTF-8 encoding of 0xFF
     private BufferedReader input;
-    private OutputStream output;
+    private PrintWriter output;
     
 
     /**
@@ -26,7 +26,7 @@ public class ServerMessageHandler {
     public ServerMessageHandler(Socket clientSocket) throws IOException {
         this.input = new BufferedReader(
                      new InputStreamReader(clientSocket.getInputStream()));
-        this.output = clientSocket.getOutputStream();
+        this.output = new PrintWriter(clientSocket.getOutputStream(), true);
     }
 
 
@@ -63,11 +63,14 @@ public class ServerMessageHandler {
      */
     public void sendStringToServer(String message) throws IOException {
         if (output != null) {
+            output.print(message + TERMINATOR);
+            /*
             for (int i = 0; i < message.length(); i++) {
                 output.write(message.charAt(i));
             }
             // Finally, terminate it.
             output.write(TERMINATOR);
+            */
             output.flush();
         }
     }
