@@ -7,6 +7,7 @@
 #include "TCPIP Stack/TCPIP.h"
 #include <ctype.h>
 #include <string.h>
+#include <assert.h>
 #include "PortConfig.h"
 #include "TCPGPIOServer.h"
 
@@ -14,6 +15,10 @@
 state myState = SM_OPEN_SERVER_SOCKET;
 command myCommand = DO_NO_COMMAND;
 parsedCommand executeCommand = INVALID;
+
+/*
+ * Unnecessary for this application
+ *
 int menuState = 0;
 BOOL promptDisplayed = FALSE;
 
@@ -21,7 +26,7 @@ const char *menu[] = {"\n\n    Enter a command to interact with board, or enter 
                       "LED1 on: LED1      LED1 off: ~LED1      LED2 on: LED2      LED2 off: ~LED2\n",
                       "LED3 on: LED3      LED3 off: ~LED3      LED4 on: LED4      LED4 off: ~LED4\n",
                       "Get BTN1 state: BTN1       Get BTN2 state: BTN2       Get BTN3 state: BTN3\n"};
-
+*/
 
 /*****************************************************************************
   Function:
@@ -87,6 +92,7 @@ void TCPGPIOServer(void) {
             if (menuState == 4) {
                 myState = SM_FIND_COMMAND;
             }*/
+            tcpSendMessageWithProtocol(mySocket, "Hello.");
 
             myState = SM_FIND_COMMAND;
 
@@ -124,19 +130,26 @@ void TCPGPIOServer(void) {
             }
             // Otherwise, get the user's command they sent, q is quit
             else {
+                tcpReadCommandWithProtocol(mySocket, userCmd, numBytes);
+                /*
                 // All commands have a max length
                 TCPGetArray(mySocket, (BYTE*)&userCmd, numBytes - 2);
                 // Null terminate command string
                 userCmd[numBytes - 2] = '\0';
                 
                 // User commands must be terminated with 0xFF
-                if (userCmd[numBytes - 3] == '0xFF') {
-                    if (numBytes == 4 && (userCmd[0] == 'q')) {
+                if (userCmd[numBytes - 3] == TERMINATING_BYTE) {
+                    ledOn(3, TRUE);
+
+                    if (numBytes == 4 && (userCmd[0] == 'q' || userCmd[0] == 'd')) {
                         myCommand = DO_QUIT;
                     }
                     else {
                         myCommand = DO_FIND;
                     }
+                }*/
+                if (userCmd[0] == 'q' || userCmd[0] == 'd') {
+                    myCommand = DO_QUIT;
                 }
             }
             
@@ -145,7 +158,9 @@ void TCPGPIOServer(void) {
                 case DO_NO_COMMAND:
                     break;
                 case DO_QUIT:
-                    promptDisplayed = FALSE;
+                    // promptDisplayed = FALSE;
+                    // Send disconnect ACK
+                    tcpSendDisconnectAcknowledge(mySocket);
                     // User quit, change state to DISCONNECT
                     myState = SM_DISCONNECT_CLIENT;
                     break;
@@ -159,7 +174,7 @@ void TCPGPIOServer(void) {
         // Act on the user's command
         case SM_PROCESS_COMMAND:
             // Biggest command response length
-            size = strlen("\x1B[32m BTN1 is NOT pressed\n");
+            size = strlen("BTN1 is NOT pressed");
 
             // If the socket is not ready to put, return
             if (TCPIsPutReady(mySocket) < size) {
@@ -169,63 +184,63 @@ void TCPGPIOServer(void) {
             switch (executeCommand) {
                 case LED1:
                     ledOn(1, TRUE);
-                    TCPPutArray(mySocket, (BYTE*)"\x1B[32m LED1 is ON\n", strlen("\x1B[32m LED1 is ON\n"));
+                    tcpSendMessageWithProtocol(mySocket, "LED1 is ON");
                     break;
                 case NOT_LED1:
                     ledOn(1, FALSE);
-                    TCPPutArray(mySocket, (BYTE*)"\x1B[32m LED1 is OFF\n", strlen("\x1B[32m LED1 is OFF\n"));
+                    tcpSendMessageWithProtocol(mySocket, "LED1 is OFF");
                     break;
                 case LED2:
                     ledOn(2, TRUE);
-                    TCPPutArray(mySocket, (BYTE*)"\x1B[32m LED2 is ON\n", strlen("\x1B[32m LED2 is ON\n"));
+                    tcpSendMessageWithProtocol(mySocket, "LED2 is ON");
                     break;
                 case NOT_LED2:
                     ledOn(2, FALSE);
-                    TCPPutArray(mySocket, (BYTE*)"\x1B[32m LED2 is OFF\n", strlen("\x1B[32m LED2 is OFF\n"));
+                    tcpSendMessageWithProtocol(mySocket, "LED2 is OFF");
                     break;
                 case LED3:
                     ledOn(3, TRUE);
-                    TCPPutArray(mySocket, (BYTE*)"\x1B[32m LED3 is ON\n", strlen("\x1B[32m LED3 is ON\n"));
+                    tcpSendMessageWithProtocol(mySocket, "LED3 is ON");
                     break;
                 case NOT_LED3:
                     ledOn(3, FALSE);
-                    TCPPutArray(mySocket, (BYTE*)"\x1B[32m LED3 is OFF\n", strlen("\x1B[32m LED3 is OFF\n"));
+                    tcpSendMessageWithProtocol(mySocket, "LED3 is OFF");
                     break;
                 case LED4:
                     ledOn(4, TRUE);
-                    TCPPutArray(mySocket, (BYTE*)"\x1B[32m LED4 is ON\n", strlen("\x1B[32m LED4 is ON\n"));
+                    tcpSendMessageWithProtocol(mySocket, "LED4 is ON");
                     break;
                 case NOT_LED4:
                     ledOn(4, FALSE);
-                    TCPPutArray(mySocket, (BYTE*)"\x1B[32m LED4 is OFF\n", strlen("\x1B[32m LED4 is OFF\n"));
+                    tcpSendMessageWithProtocol(mySocket, "LED4 is OFF");
                     break;
                 case BTN1:
                     if (buttonPressed(1) == TRUE) {
-                        TCPPutArray(mySocket, (BYTE*)"\x1B[32m BTN1 is pressed\n", strlen("\x1B[32m BTN1 is pressed\n"));
+                        tcpSendMessageWithProtocol(mySocket, "BTN1 is pressed");
                     } else {
-                        TCPPutArray(mySocket, (BYTE*)"\x1B[32m BTN1 is NOT pressed\n", strlen("\x1B[32m BTN1 is NOT pressed\n"));
+                        tcpSendMessageWithProtocol(mySocket, "BTN1 is NOT pressed");
                     }
                     break;
                 case BTN2:
                     if (buttonPressed(2) == TRUE) {
-                        TCPPutArray(mySocket, (BYTE*)"\x1B[32m BTN2 is pressed\n", strlen("\x1B[32m BTN2 is pressed\n"));
+                        tcpSendMessageWithProtocol(mySocket, "BTN1 is pressed");
                     } else {
-                        TCPPutArray(mySocket, (BYTE*)"\x1B[32m BTN2 is NOT pressed\n", strlen("\x1B[32m BTN2 is NOT pressed\n"));
+                        tcpSendMessageWithProtocol(mySocket, "BTN2 is NOT pressed");
                     }
                     break;
                 case BTN3:
                     if (buttonPressed(3) == TRUE) {
-                        TCPPutArray(mySocket, (BYTE*)"\x1B[32m BTN3 is pressed\n", strlen("\x1B[32m BTN3 is pressed\n"));
+                        tcpSendMessageWithProtocol(mySocket, "BTN3 is pressed");
                     } else {
-                        TCPPutArray(mySocket, (BYTE*)"\x1B[32m BTN3 is NOT pressed\n", strlen("\x1B[32m BTN3 is NOT pressed\n"));
+                        tcpSendMessageWithProtocol(mySocket, "BTN3 is NOT pressed");
                     }
                     break;
                 default:
-                    TCPPutArray(mySocket, (BYTE*)"\x1B[32m Invalid Command\n", strlen("\x1B[32m Invalid Command\n"));
+                    tcpSendMessageWithProtocol(mySocket, "Invalid Command");
                     break;
             }
             
-            promptDisplayed = FALSE;
+            // promptDisplayed = FALSE;
             myState = SM_FIND_COMMAND;
             break;
         // Disconnect the client   
@@ -233,7 +248,7 @@ void TCPGPIOServer(void) {
             TCPDiscard(mySocket);
             TCPDisconnect(mySocket);
             myState = SM_LISTEN_FOR_CLIENT_CONNECTION;
-            menuState = 0;
+            // menuState = 0;
             break;
     }
 }
@@ -258,12 +273,28 @@ parsedCommand findCommand(BYTE* unparsedCommand) {
     return cmd;
 }
 
-// CREATE A METHOD FOR READING FROM THE CLIENT WITH PROTOCOL
-
 void tcpSendMessageWithProtocol(TCP_SOCKET socket, char* message) {
-    TCPPutArray(socket, message, strlen(message));
+    TCPPutArray(socket, (BYTE*) message, strlen(message));
     TCPFlush(socket);
-    TCPPut(socket, TERMINATING_BYTE);
+    TCPPut(socket, (BYTE) TERMINATING_BYTE);
+}
+
+void tcpSendDisconnectAcknowledge(TCP_SOCKET socket) {
+    tcpSendMessageWithProtocol(socket, "Disconnect acknowledged.");
+}
+
+void tcpReadCommandWithProtocol(TCP_SOCKET socket, BYTE* command, unsigned int numBytes) {
+    BYTE character = (BYTE) TERMINATING_BYTE;
+    BYTE* currentChar = &character;
+
+    unsigned int currIndex = 0;
+
+    TCPGet(socket, currentChar);
+
+    while ((*currentChar != TERMINATING_BYTE) && currIndex <= numBytes) {
+        command[currIndex++] = *currentChar;
+        TCPGet(socket, currentChar);
+    }
 }
 
 #endif //#if defined(STACK_USE_TCP_TO_UPPER_SERVER)

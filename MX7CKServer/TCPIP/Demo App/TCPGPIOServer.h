@@ -50,6 +50,8 @@ typedef enum _parsedCommand {
 
 parsedCommand findCommand (BYTE* u);
 void tcpSendMessageWithProtocol(TCP_SOCKET s, char* msg);
+void tcpSendDisconnectAcknowledge(TCP_SOCKET s);
+void tcpReadCommandWithProtocol(TCP_SOCKET s, BYTE* command, unsigned int numBytes);
 
 #endif	/* TCPGPIOSERVER_H */
 
