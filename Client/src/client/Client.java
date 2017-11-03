@@ -112,7 +112,7 @@ public class Client implements Runnable {
      */
     @Override
     public void run() {
-        while (true == connected) {
+        while (true == isConnected()) {
             try {
                 String msg = this.commandHandler.readStringFromServer();
                 UI.update(msg);
@@ -122,9 +122,10 @@ public class Client implements Runnable {
                 // acknowledged us.
                 if (true == getDisconnectWaiting()) {
                     setDisconnectWaiting(false);
+                    connected = false;
                 }
             } catch (IOException e) {
-                if (true == connected) {
+                if (true == isConnected()) {
                     serverNotResponding(e);
                 }
             }
