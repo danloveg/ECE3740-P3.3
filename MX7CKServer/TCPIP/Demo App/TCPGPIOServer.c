@@ -26,6 +26,7 @@
 // State variables
 state myState = SM_OPEN_SERVER_SOCKET;
 parsedCommand parsedCmd = INVALID;
+UINT32 startingIndex = 0;
 
 
 /*****************************************************************************
@@ -55,33 +56,45 @@ void TCPGPIOServer(void) {
     BYTE userCmd[MAX_CMD_LENGTH];
 
     switch (myState) {
-        // Open a server socket
+        // -----------------------------------------------------------------
+        // STATE: Open Server Socket
+        // -----------------------------------------------------------------
         case SM_OPEN_SERVER_SOCKET:
-            mySocket = TCPOpen(0, TCP_OPEN_SERVER, TCP_GPIO_SERVER_PORT, TCP_PURPOSE_TCP_GPIO_SERVER);
+            mySocket = TCPOpen(0, TCP_OPEN_SERVER, TCP_GPIO_SERVER_PORT,
+                    TCP_PURPOSE_TCP_GPIO_SERVER);
             if (mySocket == INVALID_SOCKET) {
                 return;
             }
             myState = SM_LISTEN_FOR_CLIENT_CONNECTION;
             break;
 
-
-        // Listen for a client to connect
+        // -----------------------------------------------------------------
+        // STATE: Listen for client connections
+        // -----------------------------------------------------------------
         case SM_LISTEN_FOR_CLIENT_CONNECTION:
             if (TCPIsConnected(mySocket) == TRUE) {
                 myState = SM_DISPLAY_MENU;
             }
             break;
 
-
-        // Display the menu
+        // -----------------------------------------------------------------
+        // STATE: Display client menu
+        // -----------------------------------------------------------------
         case SM_DISPLAY_MENU:
+            // If the user has disconnected, somehow, close the connection
+            if (TCPIsConnected(mySocket) == FALSE) {
+                myState = SM_DISCONNECT_CLIENT;
+                return;
+            }
+
             // Send connected message
             tcpSendMessageWithProtocol(mySocket, "Hello.");
             myState = SM_FIND_COMMAND;
             break;
 
-
-        // Find the user's command
+        // -----------------------------------------------------------------
+        // STATE: Find the correct command that the user has entered
+        // -----------------------------------------------------------------
         case SM_FIND_COMMAND:
             // If the user has disconnected, somehow, close the connection
             if (TCPIsConnected(mySocket) == FALSE) {
@@ -95,23 +108,41 @@ void TCPGPIOServer(void) {
             // Otherwise, get the user's command
             if (numBytes > 0) {
                 // Read from the socket
-                tcpReadCommandWithProtocol(mySocket, userCmd, numBytes - 2, 0);
+                BOOL commandComplete = tcpReadCommandWithProtocol(
+                        mySocket, userCmd, numBytes - 2, startingIndex);
 
-                if (numBytes < 4 && (userCmd[0] == 'q' || userCmd[0] == 'd')) {
-                    // User wants to disconnect or quit...
-                    myState = SM_DISCONNECT_CLIENT;
+                if (commandComplete == FALSE) {
+                    // If command is incomplete, continue building it starting
+                    // at the ending index next time.
+                    startingIndex = numBytes - 2;
                 } else {
-                    // User entered a command, find it to process
-                    parsedCmd = findCommand((BYTE*)&userCmd);
-                    myState = SM_PROCESS_COMMAND;
+                    // If command is complete, process it
+                    if (numBytes == 4 && (userCmd[0] == 'q' || userCmd[0] == 'd')) {
+                        // User wants to disconnect or quit...
+                        myState = SM_DISCONNECT_CLIENT;
+                    } else {
+                        // User entered a command, find it to process
+                        parsedCmd = findCommand((BYTE*)&userCmd);
+                        myState = SM_PROCESS_COMMAND;
+                    }
+                    // Reset starting index
+                    startingIndex = 0;
                 }
             }
             break;
 
-
-        // Act on the user's command
+        // -----------------------------------------------------------------
+        // STATE: Execute the user's command
+        // -----------------------------------------------------------------
         case SM_PROCESS_COMMAND:
             {
+                // If the user has disconnected, somehow, close the connection
+                if (TCPIsConnected(mySocket) == FALSE) {
+                    myState = SM_DISCONNECT_CLIENT;
+                    return;
+                }
+
+                // Determine if command executed
                 BOOL commandExecuted = executeCommand(mySocket, parsedCmd);
 
                 if (commandExecuted == TRUE) {
@@ -120,8 +151,9 @@ void TCPGPIOServer(void) {
             }
             break;
 
-
-        // Disconnect the client   
+        // -----------------------------------------------------------------
+        // STATE: Disconnect the client
+        // -----------------------------------------------------------------
         case SM_DISCONNECT_CLIENT:
             // Disconnect acknowledge
             tcpSendDisconnectAcknowledge(mySocket);
@@ -131,7 +163,6 @@ void TCPGPIOServer(void) {
             TCPDisconnect(mySocket);
             // And start listening for other connections
             myState = SM_LISTEN_FOR_CLIENT_CONNECTION;
-            // menuState = 0;
             break;
     }
 }
@@ -248,8 +279,8 @@ BOOL executeCommand(TCP_SOCKET socket, parsedCommand cmd) {
  */
 void tcpSendMessageWithProtocol(TCP_SOCKET socket, char* message) {
     TCPPutArray(socket, (BYTE*) message, strlen(message));
-    TCPFlush(socket);
     TCPPut(socket, (BYTE) TERMINATING_BYTE);
+    TCPFlush(socket);
 }
 
 
@@ -268,32 +299,38 @@ void tcpSendDisconnectAcknowledge(TCP_SOCKET socket) {
  * @param command - The command variable where the bytes will be placed
  * @param numBytes - The number of bytes to read. The rest of the bytes in the
  *     FIFO will be discarded.
+ * @return TRUE if terminating byte was found, FALSE if not
  */
 BOOL tcpReadCommandWithProtocol(TCP_SOCKET socket, BYTE* command,
-        unsigned int numBytes, unsigned int startPos) {
+        UINT32 numBytes, UINT32 startPos) {
 
     BOOL commandComplete = FALSE;
 
-    unsigned char a = '\0';
-    BYTE *currentChar = &a;
-    int i;
+    // The starting index plus the number of bytes must be no greater than the
+    // size of the command buffer.
+    if ((startPos + numBytes) <= MAX_CMD_LENGTH) {
 
-    // Get numBytes from the socket, and append them to the command
-    for (i = 0; i < numBytes; i++) {
-        TCPGet(socket, currentChar);
+        BYTE a = '\0';
+        BYTE *currentChar = &a;
+        int i;
 
-        if (currentChar[0] != 0xEF) {
-            // If the byte isn't the termination byte, append it to the command
-            command[startPos + i] = currentChar[0];
-        } else {
-            // If the byte is the termination byte, add a null terminator to
-            // make the command a string.
-            command[startPos + i] = '\0';
-            commandComplete = TRUE;
+        // Get numBytes from the socket, and append them to the command
+        for (i = 0; i < numBytes; i++) {
+            TCPGet(socket, currentChar);
+
+            if (currentChar[0] != TERMINATING_BYTE_RECEIVED) {
+                // If the byte isn't the termination byte, append it to the command
+                command[startPos + i] = currentChar[0];
+            } else {
+                // If the byte is the termination byte, add a null terminator to
+                // make the command a string.
+                command[startPos + i] = '\0';
+                commandComplete = TRUE;
+            }
         }
-    }
 
-    TCPDiscard(socket);
+        TCPDiscard(socket);
+    }
 
     return commandComplete;
 }

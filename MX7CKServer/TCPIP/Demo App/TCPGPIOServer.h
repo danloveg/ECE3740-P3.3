@@ -11,6 +11,7 @@
 // Defines which port the server will listen on
 #define TCP_GPIO_SERVER_PORT    7777
 #define TERMINATING_BYTE 0xFF
+#define TERMINATING_BYTE_RECEIVED 0xEF
 #define MAX_RESPONSE_LENGTH 20
 #define MAX_CMD_LENGTH 18
 
@@ -42,8 +43,8 @@ parsedCommand findCommand (BYTE* u);
 BOOL executeCommand(TCP_SOCKET socket, parsedCommand cmd);
 void tcpSendMessageWithProtocol(TCP_SOCKET s, char* msg);
 void tcpSendDisconnectAcknowledge(TCP_SOCKET s);
-BOOL tcpReadCommandWithProtocol(TCP_SOCKET s, BYTE* command, unsigned int numBytes,
-        unsigned int start);
+BOOL tcpReadCommandWithProtocol(TCP_SOCKET s, BYTE* command, UINT32 numBytes,
+        UINT32 start);
 
 #endif	/* TCPGPIOSERVER_H */
 
