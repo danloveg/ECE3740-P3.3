@@ -69,7 +69,7 @@ public class ClientMessageHandler {
      * Try to connect the client to the server if they aren't already connected.
      */
     private void connectClientToServer() {
-        if (false == myClient.isConnected()) {
+        if (false == myClient.getConnected()) {
             // If we are not connected, try to connect
             try {
                 // Connect to MX7CK board
@@ -96,7 +96,7 @@ public class ClientMessageHandler {
      * server
      */
     private void disconnectClientFromServer(String disconnectString) {
-        if (true == myClient.isConnected()) {
+        if (true == myClient.getConnected()) {
             // If we are connected, try to quit
             try {
                 // Send disconnect message q or d to server
@@ -122,7 +122,7 @@ public class ClientMessageHandler {
      * @param message The message to send
      */
     private void sendStringToServer(String message) {
-        if (true == myClient.isConnected()) {
+        if (true == myClient.getConnected()) {
             try {
                 myClient.sendMessageToServer(message);
             } catch (IOException e) {

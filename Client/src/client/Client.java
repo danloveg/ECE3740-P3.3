@@ -59,7 +59,7 @@ public class Client implements Runnable {
             // Create a new command handler
             this.commandHandler = new ServerMessageHandler(clientSocket);
             // Mark Client as "connected"
-            connected = true;
+            setConnected(true);
             clientConnected();
         }
     }
@@ -91,7 +91,7 @@ public class Client implements Runnable {
         }
         
         // Mark client as "Not connected."
-        connected = false;
+        setConnected(false);
         clientDisconnected();
     }
 
@@ -112,7 +112,7 @@ public class Client implements Runnable {
      */
     @Override
     public void run() {
-        while (true == isConnected()) {
+        while (true == getConnected()) {
             try {
                 String msg = this.commandHandler.readStringFromServer();
                 UI.update(msg);
@@ -122,16 +122,16 @@ public class Client implements Runnable {
                 // acknowledged us.
                 if (true == getDisconnectWaiting()) {
                     setDisconnectWaiting(false);
-                    connected = false;
+                    setConnected(false);
                 }
             } catch (IOException e) {
-                if (true == isConnected()) {
+                if (true == getConnected()) {
                     serverNotResponding(e);
                 }
             }
         }
     }
-    
+
     // -------------------------------------------------------------------------
     // Callback Methods
     // -------------------------------------------------------------------------
@@ -195,7 +195,8 @@ public class Client implements Runnable {
     public void setPort(int newPort) { portNumber = newPort; }
     public int getPort()             { return portNumber; }
 
-    public synchronized boolean isConnected() { return connected; }
+    public synchronized void setConnected(boolean connected) { this.connected = connected; }
+    public synchronized boolean getConnected() { return connected; }
 
     public synchronized void setDisconnectWaiting(boolean waiting) { disconnectWaiting = waiting; }
     public synchronized boolean getDisconnectWaiting() { return disconnectWaiting; }
