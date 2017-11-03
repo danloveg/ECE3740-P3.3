@@ -95,7 +95,7 @@ void TCPGPIOServer(void) {
             // Otherwise, get the user's command
             if (numBytes > 0) {
                 // Read from the socket
-                tcpReadCommandWithProtocol(mySocket, userCmd, numBytes - 2);
+                tcpReadCommandWithProtocol(mySocket, userCmd, numBytes - 2, 0);
 
                 if (numBytes < 4 && (userCmd[0] == 'q' || userCmd[0] == 'd')) {
                     // User wants to disconnect or quit...
@@ -216,7 +216,7 @@ BOOL executeCommand(TCP_SOCKET socket, parsedCommand cmd) {
                 break;
             case BTN2:
                 if (buttonPressed(2) == TRUE) {
-                    tcpSendMessageWithProtocol(socket, "BTN1 is pressed");
+                    tcpSendMessageWithProtocol(socket, "BTN2 is pressed");
                 } else {
                     tcpSendMessageWithProtocol(socket, "BTN2 is NOT pressed");
                 }
@@ -269,16 +269,33 @@ void tcpSendDisconnectAcknowledge(TCP_SOCKET socket) {
  * @param numBytes - The number of bytes to read. The rest of the bytes in the
  *     FIFO will be discarded.
  */
-void tcpReadCommandWithProtocol(TCP_SOCKET socket, BYTE* command, unsigned int numBytes) {
-    TCPGetArray(socket, command, numBytes);
+BOOL tcpReadCommandWithProtocol(TCP_SOCKET socket, BYTE* command,
+        unsigned int numBytes, unsigned int startPos) {
+
+    BOOL commandComplete = FALSE;
+
+    unsigned char a = '\0';
+    BYTE *currentChar = &a;
+    int i;
+
+    // Get numBytes from the socket, and append them to the command
+    for (i = 0; i < numBytes; i++) {
+        TCPGet(socket, currentChar);
+
+        if (currentChar[0] != 0xEF) {
+            // If the byte isn't the termination byte, append it to the command
+            command[startPos + i] = currentChar[0];
+        } else {
+            // If the byte is the termination byte, add a null terminator to
+            // make the command a string.
+            command[startPos + i] = '\0';
+            commandComplete = TRUE;
+        }
+    }
+
     TCPDiscard(socket);
 
-    // Replace terminating byte with null terminator. For some reason that I do
-    // not know, the terminating byte 0xFF sent by the client is transformed to
-    // 0xEF somewhere.
-    if (command[numBytes - 1] == 0xEF) {
-        command[numBytes - 1] = '\0';
-    }
+    return commandComplete;
 }
 
 #endif //#if defined(STACK_USE_TCP_TO_UPPER_SERVER)

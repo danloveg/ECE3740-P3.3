@@ -42,7 +42,8 @@ parsedCommand findCommand (BYTE* u);
 BOOL executeCommand(TCP_SOCKET socket, parsedCommand cmd);
 void tcpSendMessageWithProtocol(TCP_SOCKET s, char* msg);
 void tcpSendDisconnectAcknowledge(TCP_SOCKET s);
-void tcpReadCommandWithProtocol(TCP_SOCKET s, BYTE* command, unsigned int numBytes);
+BOOL tcpReadCommandWithProtocol(TCP_SOCKET s, BYTE* command, unsigned int numBytes,
+        unsigned int start);
 
 #endif	/* TCPGPIOSERVER_H */
 
