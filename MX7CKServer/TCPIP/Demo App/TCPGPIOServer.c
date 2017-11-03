@@ -7,7 +7,7 @@
  *      MX7CK board, or give the state of the push buttons depending on what the
  *      user requests.
  *
- * Version: October 29, 2017
+ * Version: November 3, 2017
  */
 
 #define _SUPPRESS_PLIB_WARNING
