@@ -106,8 +106,7 @@ public class ClientMessageHandler {
             } catch (IOException e) {
                 UI.update("Disconnection error: " + e.toString());
             }
-        } else {
-            // We are not connected to a server\
+        } else if (false == disconnectString.equals("q")) {
             UI.update("No connected server.");
         }
         // If we want to quit, close the program as well
