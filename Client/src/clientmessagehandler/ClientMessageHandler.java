@@ -1,16 +1,20 @@
 package clientmessagehandler;
 
 import java.io.IOException;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ExecutorService;
 
 /**
  * Handles the executing of the user's commands.
  * 
+ * @version November 8/2017
  * @author Daniel Lovegrove
  */
 public class ClientMessageHandler {
     
     private final userinterface.Userinterface UI;
     private final client.Client myClient;
+    private final ExecutorService executor;
     
     
     /**
@@ -21,9 +25,11 @@ public class ClientMessageHandler {
     public ClientMessageHandler(userinterface.Userinterface ui, client.Client client) {
         this.UI = ui;
         this.myClient = client;
+        // Set up the executor
+        executor = Executors.newSingleThreadExecutor();
     }
-    
-    
+
+
     /**
      * Parses the user's command and executes the appropriate task.
      * @param userCommand The string the user entered
@@ -68,9 +74,9 @@ public class ClientMessageHandler {
      */
     private void connectClientToServer() {
         if (false == myClient.getConnected()) {
-            // If we are not connected, try to connect. Do it in a thread so
-            // that we don't make the UI unresponsive.
-            Thread establishConnection = new Thread(() -> {
+            // If we are not connected, try to connect. Use the executor to do
+            // this in a thread so that we don't make the UI unresponsive.
+            executor.submit(() -> {
                 try {
                     // Try to connect to server
                     myClient.connectToServerIP("192.168.1.214");
@@ -81,8 +87,7 @@ public class ClientMessageHandler {
                     UI.update("Could not create a connection to server.");
                 }
             });
-            // Start the thread
-            establishConnection.start();
+
         } else {
             // We are already connected
             UI.update("Already connected!");
@@ -98,9 +103,9 @@ public class ClientMessageHandler {
      */
     private void disconnectClientFromServer(String disconnectString) {
         if (true == myClient.getConnected()) {
-            // If we are connected, try to disconnect. Do it in a thread so
-            // that we don't make the UI unresponsive.
-            Thread closeConnection = new Thread(() -> {
+            // If we are connected, try to disconnect. Use the executor to do
+            // this in a thread so that we don't make the UI unresponsive.
+            executor.submit(() -> {
                 try {
                     // Send disconnect message q or d to server
                     sendStringToServer(disconnectString);
@@ -110,8 +115,6 @@ public class ClientMessageHandler {
                     UI.update("Disconnection error: " + ex.toString());
                 }
             });
-            // Start the thread
-            closeConnection.start();
 
         } else if (false == disconnectString.equals("q")) {
             UI.update("No connected server.");
