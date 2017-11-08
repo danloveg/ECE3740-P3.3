@@ -68,16 +68,21 @@ public class ClientMessageHandler {
      */
     private void connectClientToServer() {
         if (false == myClient.getConnected()) {
-            // If we are not connected, try to connect
-            try {
-                // Connect to MX7CK board
-                myClient.connectToServerIP("192.168.1.214");
-                // Create Client Thread and start it
-                Thread clientThread = new Thread(myClient);
-                clientThread.start();
-            } catch (IOException e) {
-                UI.update("Could not create a connection to server");
-            }
+            // If we are not connected, try to connect. Do it in a thread so
+            // that we don't make the UI unresponsive.
+            Thread establishConnection = new Thread(() -> {
+                try {
+                    // Try to connect to server
+                    myClient.connectToServerIP("192.168.1.214");
+                    // Then create the Client Thread and start it
+                    Thread clientThread = new Thread(myClient);
+                    clientThread.start();
+                } catch (IOException ex) {
+                    UI.update("Could not create a connection to server.");
+                }
+            });
+            // Start the thread
+            establishConnection.start();
         } else {
             // We are already connected
             UI.update("Already connected!");
@@ -93,15 +98,21 @@ public class ClientMessageHandler {
      */
     private void disconnectClientFromServer(String disconnectString) {
         if (true == myClient.getConnected()) {
-            // If we are connected, try to quit
-            try {
-                // Send disconnect message q or d to server
-                sendStringToServer(disconnectString);
-                // Then disconnect
-                myClient.disconnectFromServer();
-            } catch (IOException e) {
-                UI.update("Disconnection error: " + e.toString());
-            }
+            // If we are connected, try to disconnect. Do it in a thread so
+            // that we don't make the UI unresponsive.
+            Thread closeConnection = new Thread(() -> {
+                try {
+                    // Send disconnect message q or d to server
+                    sendStringToServer(disconnectString);
+                    // Then disconnect the Client
+                    myClient.disconnectFromServer();
+                } catch (IOException ex) {
+                    UI.update("Disconnection error: " + ex.toString());
+                }
+            });
+            // Start the thread
+            closeConnection.start();
+
         } else if (false == disconnectString.equals("q")) {
             UI.update("No connected server.");
         }
