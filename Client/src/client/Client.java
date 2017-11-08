@@ -3,6 +3,8 @@ package client;
 import java.io.IOException;
 import java.net.Socket;
 import java.net.InetAddress;
+import java.net.InetSocketAddress;
+import java.net.SocketTimeoutException;
 import servermessagehandler.ServerMessageHandler;
 import java.util.concurrent.TimeoutException;
 
@@ -12,7 +14,7 @@ import java.util.concurrent.TimeoutException;
  * @author Daniel Lovegrove
  */
 public class Client implements Runnable {
-    private static final int TIMEOUT_MILLIS = 2500;
+    private static final int TIMEOUT_MILLIS = 1000;
     
     private int portNumber;
     private Socket clientSocket = null;
@@ -35,8 +37,9 @@ public class Client implements Runnable {
     /**
      * Connect to the server using the local host.
      * @throws IOException
+     * @throws SocketTimeoutException
      */
-    public void connectToServerLocally() throws IOException {
+    public void connectToServerLocally() throws IOException, SocketTimeoutException {
         connectToServer(InetAddress.getLocalHost());
     }
 
@@ -45,19 +48,25 @@ public class Client implements Runnable {
      * Connect to a server using the IP address.
      * @param IP The IP address to connect to in String format
      * @throws IOException
+     * @throws SocketTimeoutException
      */
-    public void connectToServerIP(String IP) throws IOException {
+    public void connectToServerIP(String IP) throws IOException, SocketTimeoutException {
         connectToServer(InetAddress.getByName(IP));
     }
 
 
     // Connect to the server at the address and port number
-    private void connectToServer(InetAddress address) throws IOException {
-        if (null == this.clientSocket) {
+    private void connectToServer(InetAddress address) throws IOException, SocketTimeoutException {
+        if (false == getConnected()) {
             // Create a socket
-            clientSocket = new Socket(address, portNumber);
+            clientSocket = new Socket();
+
+            // Try to connect to the server
+            clientSocket.connect(new InetSocketAddress(address, portNumber), TIMEOUT_MILLIS);
+
             // Create a new command handler
             this.commandHandler = new ServerMessageHandler(clientSocket);
+
             // Mark Client as "connected"
             setConnected(true);
             clientConnected();

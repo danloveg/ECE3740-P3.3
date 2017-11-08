@@ -1,7 +1,5 @@
 package clientmessagehandler;
 
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.io.IOException;
 
 /**
@@ -77,10 +75,8 @@ public class ClientMessageHandler {
                 // Create Client Thread and start it
                 Thread clientThread = new Thread(myClient);
                 clientThread.start();
-            } catch (UnknownHostException e) {
-                UI.update("Could not determine host.");
             } catch (IOException e) {
-                UI.update("Could not connect to server.");
+                UI.update("Could not create a connection to server");
             }
         } else {
             // We are already connected
