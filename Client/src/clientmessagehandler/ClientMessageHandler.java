@@ -34,38 +34,41 @@ public class ClientMessageHandler {
      * Parses the user's command and executes the appropriate task.
      * @param userCommand The string the user entered
      */
-    public void execute(String userCommand) {
-        // First, trim any whitespace
-        String cmd = userCommand.trim();
+    public void execute(final String userCommand) {
+        // Handle the user's command in a concurrent thread
+        executor.submit(() -> {
+            // First, trim any whitespace
+            String cmd = userCommand.trim();
 
-        switch (cmd) {
-            case "connect":
-                connectClientToServer();
-                break;
-            case "d":
-            case "q":
-                disconnectClientFromServer(cmd);
-                break;
-            case "t":
-            case "L1on":
-            case "L2on":
-            case "L3on":
-            case "L4on":
-            case "L1off":
-            case "L2off":
-            case "L3off":
-            case "L4off":
-            case "gpb1":
-            case "gpb2":
-            case "gpb3":
-                sendStringToServer(cmd);
-                break;
-            case "":
-                break;
-            default:
-                invalidCommand(cmd);
-                break;
-        }
+            switch (cmd) {
+                case "connect":
+                    connectClientToServer();
+                    break;
+                case "d":
+                case "q":
+                    disconnectClientFromServer(cmd);
+                    break;
+                case "t":
+                case "L1on":
+                case "L2on":
+                case "L3on":
+                case "L4on":
+                case "L1off":
+                case "L2off":
+                case "L3off":
+                case "L4off":
+                case "gpb1":
+                case "gpb2":
+                case "gpb3":
+                    sendStringToServer(cmd);
+                    break;
+                case "":
+                    break;
+                default:
+                    invalidCommand(cmd);
+                    break;
+            }
+        });
     }
 
 
@@ -74,19 +77,15 @@ public class ClientMessageHandler {
      */
     private void connectClientToServer() {
         if (false == myClient.getConnected()) {
-            // If we are not connected, try to connect. Use the executor to do
-            // this in a thread so that we don't make the UI unresponsive.
-            executor.submit(() -> {
-                try {
-                    // Try to connect to server
-                    myClient.connectToServerIP("192.168.1.214");
-                    // Then create the Client Thread and start it
-                    Thread clientThread = new Thread(myClient);
-                    clientThread.start();
-                } catch (IOException ex) {
-                    UI.update("Could not create a connection to server.");
-                }
-            });
+            try {
+                // Try to connect to server
+                myClient.connectToServerIP("192.168.1.214");
+                // Then create the Client Thread and start it
+                Thread clientThread = new Thread(myClient);
+                clientThread.start();
+            } catch (IOException ex) {
+                UI.update("Could not create a connection to server.");
+            }
 
         } else {
             // We are already connected
@@ -103,18 +102,14 @@ public class ClientMessageHandler {
      */
     private void disconnectClientFromServer(String disconnectString) {
         if (true == myClient.getConnected()) {
-            // If we are connected, try to disconnect. Use the executor to do
-            // this in a thread so that we don't make the UI unresponsive.
-            executor.submit(() -> {
-                try {
-                    // Send disconnect message q or d to server
-                    sendStringToServer(disconnectString);
-                    // Then disconnect the Client
-                    myClient.disconnectFromServer();
-                } catch (IOException ex) {
-                    UI.update("Disconnection error: " + ex.toString());
-                }
-            });
+            try {
+                // Send disconnect message q or d to server
+                sendStringToServer(disconnectString);
+                // Then disconnect the Client
+                myClient.disconnectFromServer();
+            } catch (IOException ex) {
+                UI.update("Disconnection error: " + ex.toString());
+            }
 
         } else if (false == disconnectString.equals("q")) {
             UI.update("No connected server.");
