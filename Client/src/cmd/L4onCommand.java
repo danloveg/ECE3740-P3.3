@@ -4,6 +4,6 @@ package cmd;
  *
  * @author loveboat
  */
-public class SendServerMessageCmd {
+public class L4onCommand {
 
 }

@@ -4,6 +4,6 @@ package cmd;
  *
  * @author loveboat
  */
-public class ConnectToServerCmd {
+public class L1offComand {
 
 }
