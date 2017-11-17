@@ -85,23 +85,23 @@ public class Client implements Runnable {
             waitForDisconnectAck();
         } catch (TimeoutException e) {
             UI.update("Server connection timed out. Closing connection immediately.");
-        }
+        } finally {
+            // Close the socket
+            if (null != this.clientSocket) {
+                clientSocket.close();
+                clientSocket = null;
+            }
 
-        // Close the socket
-        if (null != this.clientSocket) {
-            clientSocket.close();
-            clientSocket = null;
-        }
+            // Close the command handler
+            if (null != this.commandHandler) {
+                this.commandHandler.close();
+                this.commandHandler = null;
+            }
 
-        // Close the command handler
-        if (null != this.commandHandler) {
-            this.commandHandler.close();
-            this.commandHandler = null;
+            // Mark client as "Not connected."
+            setConnected(false);
+            clientDisconnected();
         }
-        
-        // Mark client as "Not connected."
-        setConnected(false);
-        clientDisconnected();
     }
 
 
