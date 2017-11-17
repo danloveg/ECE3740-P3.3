@@ -4,11 +4,11 @@ package cmd;
  *
  * @author loveboat
  */
-public class L2onCommand extends UserCommandHandler {
+public class L1offCommand extends UserCommandHandler {
     private userinterface.Userinterface myUI;
     private client.Client myClient;
 
-    public L2onCommand (userinterface.Userinterface ui, client.Client client) {
+    public L1offCommand (userinterface.Userinterface ui, client.Client client) {
         super(ui, client);
         myUI = ui;
         myClient = client;
