@@ -85,13 +85,4 @@ public class UserCommandReceiver {
             UI.update("No connected server.");
         }
     }
-
-
-    /**
-     * Notify the user that their command is not valid.
-     * @param command The command that was invalid
-     */
-    private void invalidCommand(String command) {
-        UI.update("\"" + command + "\" is not recognized.");
-    }
 }
