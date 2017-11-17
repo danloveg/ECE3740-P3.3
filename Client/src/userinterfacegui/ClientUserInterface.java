@@ -10,7 +10,7 @@ import java.awt.event.WindowAdapter;
 public class ClientUserInterface extends javax.swing.JFrame
                                  implements userinterface.Userinterface {
     
-    private clientmessagehandler.ClientMessageHandler commandHandler;
+    private commandinterface.Command commandHandler;
 
     /**
      * Creates new form ClientUserInterface
@@ -36,7 +36,7 @@ public class ClientUserInterface extends javax.swing.JFrame
      * Set the command handler.
      * @param handler The command handler to be associated with this.
      */
-    public void setCommandHandler(clientmessagehandler.ClientMessageHandler handler) {
+    public void setCommandHandler(commandinterface.Command handler) {
         commandHandler = handler;
     }
 

@@ -15,8 +15,8 @@ public class ClientTest {
         client.Client myClient = new client.Client(7777, userInterface);
         
         // Instantiate a command handler for the user
-        clientmessagehandler.ClientMessageHandler commandHandler =
-                new clientmessagehandler.ClientMessageHandler(userInterface, myClient);
+        commandinterface.Command commandHandler =
+                new cmd.UserCommandHandler(userInterface, myClient);
         
         // Set the user interface's command handler
         userInterface.setCommandHandler(commandHandler);
