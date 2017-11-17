@@ -4,17 +4,15 @@ package cmd;
  *
  * @author loveboat
  */
-public class qCommand extends UserCommandHandler {
-    private userinterface.Userinterface myUI;
-    private client.Client myClient;
+public class qCommand implements commandinterface.Command {
+    private final cmd.UserCommandReceiver receiver;
 
-    public qCommand (userinterface.Userinterface ui, client.Client client) {
-        super(ui, client);
-        myUI = ui;
-        myClient = client;
+    public qCommand (cmd.UserCommandReceiver receiver) {
+        this.receiver = receiver;
     }
 
     @Override
     public void execute(String cmd) {
+        receiver.disconnectClientFromServer("q");
     }
 }

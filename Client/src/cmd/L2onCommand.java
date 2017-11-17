@@ -4,17 +4,15 @@ package cmd;
  *
  * @author loveboat
  */
-public class L2onCommand extends UserCommandHandler {
-    private userinterface.Userinterface myUI;
-    private client.Client myClient;
+public class L2onCommand implements commandinterface.Command {
+    private final cmd.UserCommandReceiver receiver;
 
-    public L2onCommand (userinterface.Userinterface ui, client.Client client) {
-        super(ui, client);
-        myUI = ui;
-        myClient = client;
+    public L2onCommand (cmd.UserCommandReceiver receiver) {
+        this.receiver = receiver;
     }
 
     @Override
     public void execute(String cmd) {
+        receiver.sendStringToServer("L2on");
     }
 }

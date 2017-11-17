@@ -4,17 +4,15 @@ package cmd;
  *
  * @author loveboat
  */
-public class gpb3Command extends UserCommandHandler {
-    private userinterface.Userinterface myUI;
-    private client.Client myClient;
+public class gpb3Command implements commandinterface.Command {
+    private final cmd.UserCommandReceiver receiver;
 
-    public gpb3Command (userinterface.Userinterface ui, client.Client client) {
-        super(ui, client);
-        myUI = ui;
-        myClient = client;
+    public gpb3Command (cmd.UserCommandReceiver receiver) {
+        this.receiver = receiver;
     }
 
     @Override
     public void execute(String cmd) {
+        receiver.sendStringToServer("gpb3");
     }
 }

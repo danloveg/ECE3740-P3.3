@@ -16,7 +16,7 @@ public class ClientTest {
         
         // Instantiate a command handler for the user
         commandinterface.Command commandHandler =
-                new cmd.UserCommandHandler(userInterface, myClient);
+                new cmd.UserCommandInvoker(userInterface, myClient);
         
         // Set the user interface's command handler
         userInterface.setCommandHandler(commandHandler);
@@ -28,6 +28,5 @@ public class ClientTest {
 
         // Display the initial menu
         userInterface.update("Connect to server to begin.");
-        
     }
 }

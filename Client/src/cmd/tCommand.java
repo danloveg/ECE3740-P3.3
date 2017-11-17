@@ -4,17 +4,15 @@ package cmd;
  *
  * @author loveboat
  */
-public class tCommand extends UserCommandHandler {
-    private userinterface.Userinterface myUI;
-    private client.Client myClient;
+public class tCommand implements commandinterface.Command {
+    private final cmd.UserCommandReceiver receiver;
 
-    public tCommand (userinterface.Userinterface ui, client.Client client) {
-        super(ui, client);
-        myUI = ui;
-        myClient = client;
+    public tCommand (cmd.UserCommandReceiver receiver) {
+        this.receiver = receiver;
     }
 
     @Override
     public void execute(String cmd) {
+        receiver.sendStringToServer("t");
     }
 }
